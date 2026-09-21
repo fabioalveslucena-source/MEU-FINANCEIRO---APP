@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-
       - name: Baixar codigo
         uses: actions/checkout@v4
 
@@ -35,14 +34,14 @@ jobs:
       - name: Compilar APK
         run: |
           gradle assembleDebug --stacktrace
-- name: Localizar APK
-  run: |
-    find . -type f -name "*.apk" -print
 
-- name: Disponibilizar APK
-  uses: actions/upload-artifact@v4
-  with:
-    name: Meu-Financeiro-APK
-    path: "**/*.apk"
-    if-no-files-found: error
-      
+      - name: Localizar APK
+        run: |
+          find . -type f -name "*.apk" -print
+
+      - name: Disponibilizar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meu-Financeiro-APK
+          path: "**/*.apk"
+          if-no-files-found: error
