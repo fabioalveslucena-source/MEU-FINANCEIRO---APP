@@ -35,10 +35,14 @@ jobs:
       - name: Compilar APK
         run: |
           gradle assembleDebug --stacktrace
+- name: Localizar APK
+  run: |
+    find . -type f -name "*.apk" -print
 
-      - name: Disponibilizar APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Meu-Financeiro-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
+- name: Disponibilizar APK
+  uses: actions/upload-artifact@v4
+  with:
+    name: Meu-Financeiro-APK
+    path: "**/*.apk"
+    if-no-files-found: error
+      
