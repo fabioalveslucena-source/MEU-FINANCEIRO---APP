@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+
       - name: Baixar codigo
         uses: actions/checkout@v4
 
@@ -41,20 +42,32 @@ jobs:
 
       - name: Verificar ambiente
         run: |
+          echo "JAVA:"
           java -version
+
+          echo "GRADLE:"
           gradle --version
+
+          echo "ANDROID:"
           sdkmanager --list_installed
 
       - name: Compilar APK
         run: |
+          echo "======================================"
+          echo "INICIANDO COMPILACAO DO APK"
+          echo "======================================"
+
           gradle assembleDebug --stacktrace
 
-      - name: Diagnosticar APK
-        run: |
-          echo "=== TODOS OS APKs ==="
+          echo "======================================"
+          echo "COMPILACAO TERMINADA"
+          echo "======================================"
+
+          echo "ARQUIVOS APK ENCONTRADOS:"
           find . -type f -name "*.apk" -print
 
       - name: Disponibilizar APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Meu-Financeiro-APK
