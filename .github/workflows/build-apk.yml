@@ -57,21 +57,16 @@ jobs:
         run: |
           gradle assembleDebug --stacktrace
 
-      - name: Procurar APK
+            - name: Diagnosticar saída da compilação
         run: |
-          echo "=== PROCURANDO APK ==="
-          find app/build/outputs -type f -name "*.apk" -print
+          echo "=== DIRETÓRIO DO PROJETO ==="
+          pwd
 
-          echo "=== ESTRUTURA DA PASTA OUTPUTS ==="
-          find app/build/outputs -maxdepth 5 -type f -print
+          echo "=== ARQUIVOS DO PROJETO ==="
+          find . -maxdepth 4 -type f | sort
 
-      - name: Verificar se APK existe
-        run: |
-          test -n "$(find app/build/outputs -type f -name '*.apk' -print -quit)"
+          echo "=== DIRETÓRIOS BUILD ==="
+          find . -type d -name build -print
 
-      - name: Disponibilizar APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Meu-Financeiro-APK
-          path: app/build/outputs/**/*.apk
-          if-no-files-found: error
+          echo "=== TODOS OS APKs ==="
+          find . -type f -name "*.apk" -print
