@@ -31,13 +31,13 @@ jobs:
         with:
           packages: ''
 
-      - name: Compilar APK
+            - name: Compilar APK
         run: |
-          gradle assembleDebug --stacktrace
-
-      - name: Localizar APK
-        run: |
-          find . -type f -name "*.apk" -print
+          gradle :app:assembleDebug --stacktrace
+          echo "=== ARQUIVOS GERADOS ==="
+          find app -type f | grep -E '\.apk$' || true
+          echo "=== PASTA OUTPUTS ==="
+          find app/build -maxdepth 5 -type f 2>/dev/null || true
 
       - name: Disponibilizar APK
         uses: actions/upload-artifact@v4
