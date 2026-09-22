@@ -26,30 +26,14 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Compilar APK
-        shell: bash
-        run: |
-          set +e
-          gradle :app:assembleDebug --stacktrace --info --console=plain 2>&1 | tee build.log
-          status=${PIPESTATUS[0]}
-
-          echo "DIAGNOSTICO DA COMPILACAO"
-          tail -n 300 build.log
-
-          echo "## Diagnostico da compilacao" >> "$GITHUB_STEP_SUMMARY"
-          echo '```text' >> "$GITHUB_STEP_SUMMARY"
-          tail -n 300 build.log >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-
-          exit "$status"
+        run: gradle :app:assembleDebug
 
       - name: Verificar APK
-        if: success()
         run: |
           echo "Arquivos APK encontrados:"
           find . -type f -name "*.apk" -print
 
       - name: Disponibilizar APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Meu-Financeiro-APK
