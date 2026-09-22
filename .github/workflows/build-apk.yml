@@ -24,46 +24,24 @@ jobs:
 
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v4
-
-            - name: Compilar APK
+        
+      - name: Compilar APK
         id: compilar
         shell: bash
         run: |
           set +e
-
           gradle :app:assembleDebug --stacktrace --info --console=plain 2>&1 | tee build.log
-
           status=${PIPESTATUS[0]}
 
-          echo ""
-          echo "================================================="
           echo "DIAGNÓSTICO DA COMPILAÇÃO"
-          echo "================================================="
           tail -n 300 build.log
 
-          {
-            echo "## 🔎 Diagnóstico da compilação"
-            echo ""
-            echo '```text'
-            tail -n 300 build.log
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "## Diagnóstico da compilação" >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          tail -n 300 build.log >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
           exit "$status"
-
-      - name: Mostrar diagnóstico
-        if: always()
-        shell: bash
-        run: |
-          if [ -f build.log ]; then
-            {
-              echo "## 📋 Erro completo do Gradle"
-              echo ""
-              echo '```text'
-              tail -n 300 build.log
-              echo '```'
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
 
       - name: Verificar APK
         run: |
