@@ -11,27 +11,69 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Baixar codigo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v5
+      - name: Configurar Java
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: gradle/actions/setup-gradle@v6
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: '8.10'
 
-      - uses: android-actions/setup-android@v4
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v4
 
-      - name: Compilar
-        run: gradle :app:assembleDebug
+      - name: Compilar APK e capturar diagnostico
+        shell: bash
+        run: |
+          set +e
 
-      - name: Listar APK
-        run: find . -type f -name "*.apk" -print
+          echo "========================================"
+          echo "INICIO DA COMPILACAO"
+          echo "========================================"
 
-      - name: Publicar APK
+          gradle :app:assembleDebug --stacktrace --info --console=plain > build.log 2>&1
+
+          STATUS=$?
+
+          echo ""
+          echo "========================================"
+          echo "RESULTADO DA COMPILACAO"
+          echo "========================================"
+          echo "Codigo de saida: $STATUS"
+
+          echo ""
+          echo "========================================"
+          echo "ULTIMAS 300 LINHAS DO LOG"
+          echo "========================================"
+
+          tail -n 300 build.log
+
+          exit $STATUS
+
+      - name: Disponibilizar diagnostico
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostico-build
+          path: build.log
+          if-no-files-found: warn
+
+      - name: Verificar APK
+        if: always()
+        run: |
+          echo "Arquivos APK encontrados:"
+          find . -type f -name "*.apk" -print
+
+      - name: Disponibilizar APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Meu-Financeiro-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
